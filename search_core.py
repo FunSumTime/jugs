@@ -1,4 +1,18 @@
  from collections import deque
+
+class Node:
+    def __init__(self, state, parent=None, action=None, cost=0, cap):
+        self.state = state  # The current state of the jugs (e.g., a tuple: (2, 0))
+        self.parent = parent  # Reference to the node that created this one
+        self.cost = cost  # The number of steps to reach this state
+        self.capacity = cap
+
+# gloabal varables 
+capacities = [8,5,3]
+start = [8,0,0]
+initail_node = Node(state=start)
+goalstate = [4,4,0]
+
 def Actions(state):
     actions = []
     num_jugs = len(state)
@@ -34,25 +48,39 @@ def transitive(state, action):
 def isgoal(state,goal):
     return state == goal
 
+# recurse up the parent path
+def getpath(node):
+    path = []
+    path.append([node.state,node.action])
+    parent = node.parent
+    while parent:
+        
+        path.append([parent.state, parent.action])
+        parent = parent.parent
+    # could also do this with slicing ex [::-1] would reverse it
+    return path[::-1]
 
-def getpath(state):
 
-
-def bfsSearch(state):
+def bfsSearch(initail_node):
     frontier = deque
-    deque.append(state)
+    frontier.append(initail_node)
+    visted = {initail_node.state}
     while frontier:
-        n = deque.popleft()
-        if(isgoal(n,goalstate)):
+        n = frontier.popleft()
+        if(isgoal(n.state,goalstate)):
             # we found the goal
             return getpath(n)
-        for i in Actions(n):
+        for i in Actions(n.state):
 
-            s = transitive(n,i)
-            new_state = Node(state=s, parent=n, cap=n.cost+1)
+            s = transitive(n.state,i)
+            new_state = Node(state=s, parent=n, action=i,cap=n.cost+1)
             if(new_state.state not in visted):
                 visted.append(new_state.state)
-                deque.append(new_state)
+                frontier.append(new_state)
+    
+
+    # return failur
+    return []
 
 
 
