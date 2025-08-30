@@ -23,6 +23,7 @@ class Node:
 IDFSGenerated = 1
 BFSGenerated = 1
 Max_frontier_size = 0
+Max_frontier_sizeDF = 0
 BFSDethp = 0
 IDDepth = 0
 IDCost = 0
@@ -90,7 +91,7 @@ def getpath(node):
     return path
 
 # Natural BFS search with a vist list to make it not loop over ones it already checked
-def bfsSearch(initail_node):
+def bfsSearch(initail_node,goalstate):
     # so we can acces these in the function
     global BFSCost, BFSDethp, BFSGenerated, Max_frontier_size
     # class constructor not a varable
@@ -126,8 +127,8 @@ def bfsSearch(initail_node):
     # return failur
     return None
 # does DFS but to a limit which is specified and will restart each time
-def IDFS(initail_node, Limit):
-    global IDCost, IDDepth, IDFSGenerated
+def IDFS(initail_node, Limit,goalstate):
+    global IDCost, IDDepth, IDFSGenerated,Max_frontier_sizeDF
     # DFS uses a stack so make one and add the first node and state to vistied
     stack = []
     stack.append(initail_node)
@@ -159,6 +160,8 @@ def IDFS(initail_node, Limit):
                 visited.append(s)
                 stack.append(new_node)
                 IDFSGenerated += 1
+                if(Max_frontier_sizeDF < len(stack)):
+                    Max_frontier_sizeDF = len(stack)
 
     
     if(cuttoff):
@@ -167,10 +170,10 @@ def IDFS(initail_node, Limit):
     else:
         return None
 # calls IDFS with a speicifed limit so it can recursivly go through the tree
-def IDFS_Caller(initial_node, max_depth=50):
+def IDFS_Caller(initial_node, goalstate,max_depth=50,):
     for limit in range(max_depth):
         # Call the IDFS helper with an increasing depth limit
-        result = IDFS(initial_node, limit)
+        result = IDFS(initial_node, limit,goalstate)
 
         # Check the result of the IDFS call
         if result == "cutoff":
@@ -185,30 +188,59 @@ def IDFS_Caller(initial_node, max_depth=50):
     
     return None
 
-
+# just comment out either case then run to run the other case
+# include the prints for c,d or a,b depending which case you want to run
 
 #  case one
 
-# initail_node = Node(state= [8,0,0], cap=[8,5,3])
-# goalstate = [4,4,0]
 
-# a = bfsSearch(initail_node)
-# b = IDFS_Caller(initail_node)
-# print(a)
-# print(b)
 
 
 #  case two
 
-initail_node_2 = Node(state = [1,3,5], cap=[3,5,8])
-goalstate = [0,5,4]
-c = bfsSearch(initail_node_2)
-d = IDFS_Caller(initail_node_2)
-print(c)
-print(d)
+
+
+def main():
+    print("This program runs on two cases:\n\n Case 1:\nStarting state: [8,0,0]\nCapacity: [8,5,3]\nGoal: [4,4,0]\n\n Case 2:\nStarting state: [1,3,5]\nCapacity: [3,5,8]\n Goal: [0,5,4]\n\n For one case, BFS and IDS will run at the same time")
+    while(True):
+
+        try:
+            which_input = int(input("Enter which case to run as a int. Ex: 1 (for case 1) "))
+            if(which_input == 1 or which_input == 2):
+                break
+            else:
+                print("please enter 1 or 2 for the case to select")
+        except ValueError:
+            pass
+    if(which_input == 1):
+        #  case 1
+        initail_node = Node(state= [8,0,0], cap=[8,5,3])
+        goalstate = [4,4,0]
+
+        a = bfsSearch(initail_node,goalstate)
+        b = IDFS_Caller(initail_node,goalstate)
+        print("\nBFS Path:")
+        print(a)
+        print("\nIDFS Path:")
+        print(b)
+    else:
+        # case 2
+        initail_node_2 = Node(state = [1,3,5], cap=[3,5,8])
+        goalstate = [0,5,4]
+        c = bfsSearch(initail_node_2,goalstate)
+        d = IDFS_Caller(initail_node_2,goalstate)
+        print("\nBFS Path:")
+        print(c)
+        print("\nIDFS Path:")
+        print(d)
 
 # metrics printed
-print("BFS statistics: Generated " + str(BFSGenerated) + " Depth: " + str(BFSDethp) + " Cost: "  + str(BFSCost) + " Max Size: " +str(Max_frontier_size)  )
-print("IDFS statistics: Generated " + str(IDFSGenerated) + " Depth: " + str(IDDepth) + " Cost: "  +  str(IDCost)  )
+    print("\nRESULTS:")
+    print("BFS Stats: Generated " + str(BFSGenerated) + " Depth: " + str(BFSDethp) + " Cost: "  + str(BFSCost) + " Max Size: " +str(Max_frontier_size)  )
+    print("IDFS Stats: Generated " + str(IDFSGenerated) + " Depth: " + str(IDDepth) + " Cost: "  +  str(IDCost) + " Max Size: "  + str(Max_frontier_sizeDF))
+
+
 # generated and expanded would be the same as we get rid of duplicates
 
+if __name__ == "__main__":
+    main()
